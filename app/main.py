@@ -1,51 +1,65 @@
+# app/main.py
 import os
 import sys
 sys.path.append('/app')
 
 from flask import Flask
+from flask_cors import CORS
 from config import config
 from extensions import db, migrate
 from routes.appointments import appointments_bp
-# Register a CLI command to seed the database
+from routes.customers import customers_bp
+from routes.dispositions import dispositions_bp
+from routes.users import users_bp
+from routes.roles import roles_bp
+from routes.permissions import permissions_bp
+from error_handlers import register_error_handlers
+
 from seed_data import seed_database
 from flask.cli import with_appcontext
 import click
 
 def create_app(config_name=None):
     app = Flask(__name__)
+    CORS(app)
     
     if config_name is None:
         config_name = os.environ.get('FLASK_ENV', 'default')
-    
+
     app.config.from_object(config[config_name])
-    
+
     db.init_app(app)
     migrate.init_app(app, db)
-    
-    app.register_blueprint(appointments_bp, url_prefix='/api')
-    
+
+    # Register blueprints
+    app.register_blueprint(appointments_bp, url_prefix='/api/appointments')
+    app.register_blueprint(customers_bp, url_prefix='/api/customers')
+    app.register_blueprint(dispositions_bp, url_prefix='/api/dispositions')
+    app.register_blueprint(users_bp, url_prefix='/api/users')
+    app.register_blueprint(roles_bp, url_prefix='/api/roles')
+    app.register_blueprint(permissions_bp, url_prefix='/api/permissions')
+
+    register_error_handlers(app)
+
+    @app.teardown_request
+    def teardown_request(exception=None):
+        if exception:
+            db.session.rollback()
+        db.session.remove()
+
     @app.route('/health')
     def health_check():
         return {'status': 'healthy', 'message': 'Triguard Backend API is running'}
-    
-    # Import models to ensure they are registered with SQLAlchemy
-    from models import models
-    
-    with app.app_context():
-      from models import models  # ensure models are registered
-      print("Models imported successfully")
 
-      if config_name == 'development':
-          print("Running in development mode")
-  
+    # Import models so migrations detect them
+    from models import models
+
     register_commands(app)
     return app
-
 
 @click.command("seed")
 @with_appcontext
 def seed_command():
-    """Seed the database with sample data."""
     seed_database()
 
 def register_commands(app):
