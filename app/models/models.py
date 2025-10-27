@@ -7,6 +7,9 @@ class Permission(db.Model):
     
     code = db.Column(db.String(50), primary_key=True)
     description = db.Column(db.Text)
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=True)
+    
+    role = db.relationship('Role', backref='permissions')
     
     def __repr__(self):
         return f'<Permission {self.code}>'
@@ -16,9 +19,6 @@ class Role(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
-    permissions_id = db.Column(db.String(50), db.ForeignKey('permissions.code'), nullable=False)
-    
-    permission = db.relationship('Permission', backref='roles')
     
     def __repr__(self):
         return f'<Role {self.name}>'
