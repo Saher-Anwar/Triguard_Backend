@@ -1,52 +1,21 @@
 version: '3.8'
 
 services:
-  db:
-    image: postgres:15-alpine
-    container_name: triguard_postgres
-    restart: unless-stopped
-    environment:
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-    ports:
-      - "${DB_PORT}:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - triguard_network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   backend:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: triguard_backend
     restart: unless-stopped
-    environment:
-      - FLASK_ENV=${FLASK_ENV}
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
+    env_file:
+      - .env
     ports:
       - "5000:5000"
     volumes:
       - ./app:/app/app
       - ./migrations:/app/migrations
-    depends_on:
-      db:
-        condition: service_healthy
     networks:
       - triguard_network
-
-volumes:
-  postgres_data:
 
 networks:
   triguard_network:
