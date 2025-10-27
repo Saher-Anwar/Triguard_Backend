@@ -28,18 +28,12 @@ def create_app(config_name=None):
     from models import models
     
     with app.app_context():
-        try:
-            db.create_all()
-            print("Database tables created successfully")
-            
-            if config_name == 'development':
-                sys.path.append('/app')
-                from seed_data import seed_database
-                seed_database()
-                print("Sample data seeded successfully")
-                
-        except Exception as e:
-            print(f"Error during database initialization: {e}")
+      from models import models  # ensure models are registered
+      print("Models imported successfully")
+
+      if config_name == 'development':
+          print("Running in development mode")
+  
     
     return app
 
