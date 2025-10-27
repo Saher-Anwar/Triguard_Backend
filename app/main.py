@@ -6,6 +6,10 @@ from flask import Flask
 from config import config
 from extensions import db, migrate
 from routes.appointments import appointments_bp
+# Register a CLI command to seed the database
+from seed_data import seed_database
+from flask.cli import with_appcontext
+import click
 
 def create_app(config_name=None):
     app = Flask(__name__)
@@ -34,8 +38,18 @@ def create_app(config_name=None):
       if config_name == 'development':
           print("Running in development mode")
   
-    
+    register_commands(app)
     return app
+
+
+@click.command("seed")
+@with_appcontext
+def seed_command():
+    """Seed the database with sample data."""
+    seed_database()
+
+def register_commands(app):
+    app.cli.add_command(seed_command)
 
 if __name__ == '__main__':
     app = create_app()
