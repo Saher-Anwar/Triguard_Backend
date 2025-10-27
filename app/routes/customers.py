@@ -5,7 +5,7 @@ from models.models import Customer
 
 customers_bp = Blueprint('customers', __name__)
 
-@customers_bp.route('/', methods=['GET'])
+@customers_bp.route('/customer', methods=['GET'])
 def get_all_customers():
     customers = Customer.query.all()
     return jsonify([{
@@ -17,7 +17,7 @@ def get_all_customers():
         'profile_data': c.profile_data
     } for c in customers])
 
-@customers_bp.route('/<int:id>', methods=['GET'])
+@customers_bp.route('/customer/<int:id>', methods=['GET'])
 def get_customer(id):
     customer = Customer.query.get_or_404(id)
     return jsonify({
@@ -29,7 +29,7 @@ def get_customer(id):
         'profile_data': customer.profile_data
     })
 
-@customers_bp.route('/', methods=['POST'])
+@customers_bp.route('/customer', methods=['POST'])
 def create_customer():
     data = request.get_json()
     customer = Customer(
@@ -43,7 +43,7 @@ def create_customer():
     db.session.commit()
     return jsonify({'message': 'Customer created', 'id': customer.id}), 201
 
-@customers_bp.route('/<int:id>', methods=['PUT'])
+@customers_bp.route('/customer/<int:id>', methods=['PUT'])
 def update_customer(id):
     customer = Customer.query.get_or_404(id)
     data = request.get_json()
@@ -53,7 +53,7 @@ def update_customer(id):
     db.session.commit()
     return jsonify({'message': 'Customer updated'})
 
-@customers_bp.route('/<int:id>', methods=['DELETE'])
+@customers_bp.route('/customer/<int:id>', methods=['DELETE'])
 def delete_customer(id):
     customer = Customer.query.get_or_404(id)
     db.session.delete(customer)

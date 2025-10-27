@@ -5,7 +5,7 @@ from models.models import Permission
 permissions_bp = Blueprint('permissions', __name__)
 
 # ✅ Create
-@permissions_bp.route('/permissions', methods=['POST'])
+@permissions_bp.route('/permission', methods=['POST'])
 def create_permission():
     data = request.get_json()
     permission = Permission(**data)
@@ -20,13 +20,13 @@ def get_permissions():
     return jsonify([p.to_dict() for p in permissions])
 
 # ✅ Read one
-@permissions_bp.route('/permissions/<int:id>', methods=['GET'])
+@permissions_bp.route('/permission/<int:id>', methods=['GET'])
 def get_permission(id):
     permission = Permission.query.get_or_404(id)
     return jsonify(permission.to_dict())
 
 # ✅ Update
-@permissions_bp.route('/permissions/<int:id>', methods=['PUT'])
+@permissions_bp.route('/permission/<int:id>', methods=['PUT'])
 def update_permission(id):
     permission = Permission.query.get_or_404(id)
     data = request.get_json()
@@ -36,7 +36,7 @@ def update_permission(id):
     return jsonify(permission.to_dict())
 
 # ✅ Delete
-@permissions_bp.route('/permissions/<int:id>', methods=['DELETE'])
+@permissions_bp.route('/permission/<int:id>', methods=['DELETE'])
 def delete_permission(id):
     permission = Permission.query.get_or_404(id)
     db.session.delete(permission)

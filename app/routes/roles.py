@@ -5,7 +5,7 @@ from models.models import Role
 roles_bp = Blueprint('roles', __name__)
 
 # ✅ Create
-@roles_bp.route('/roles', methods=['POST'])
+@roles_bp.route('/role', methods=['POST'])
 def create_role():
     data = request.get_json()
     role = Role(**data)
@@ -20,13 +20,13 @@ def get_roles():
     return jsonify([r.to_dict() for r in roles])
 
 # ✅ Read one
-@roles_bp.route('/roles/<int:id>', methods=['GET'])
+@roles_bp.route('/role/<int:id>', methods=['GET'])
 def get_role(id):
     role = Role.query.get_or_404(id)
     return jsonify(role.to_dict())
 
 # ✅ Update
-@roles_bp.route('/roles/<int:id>', methods=['PUT'])
+@roles_bp.route('/role/<int:id>', methods=['PUT'])
 def update_role(id):
     role = Role.query.get_or_404(id)
     data = request.get_json()
@@ -36,7 +36,7 @@ def update_role(id):
     return jsonify(role.to_dict())
 
 # ✅ Delete
-@roles_bp.route('/roles/<int:id>', methods=['DELETE'])
+@roles_bp.route('/role/<int:id>', methods=['DELETE'])
 def delete_role(id):
     role = Role.query.get_or_404(id)
     db.session.delete(role)

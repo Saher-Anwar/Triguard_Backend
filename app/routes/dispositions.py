@@ -5,7 +5,7 @@ from models.models import Disposition
 dispositions_bp = Blueprint('dispositions', __name__)
 
 # ✅ Create
-@dispositions_bp.route('/dispositions', methods=['POST'])
+@dispositions_bp.route('/disposition', methods=['POST'])
 def create_disposition():
     data = request.get_json()
     disposition = Disposition(**data)
@@ -20,13 +20,13 @@ def get_dispositions():
     return jsonify([d.to_dict() for d in dispositions])
 
 # ✅ Read one
-@dispositions_bp.route('/dispositions/<string:code>', methods=['GET'])
+@dispositions_bp.route('/disposition/<string:code>', methods=['GET'])
 def get_disposition(code):
     disposition = Disposition.query.get_or_404(code)
     return jsonify(disposition.to_dict())
 
 # ✅ Update
-@dispositions_bp.route('/dispositions/<string:code>', methods=['PUT'])
+@dispositions_bp.route('/disposition/<string:code>', methods=['PUT'])
 def update_disposition(code):
     disposition = Disposition.query.get_or_404(code)
     data = request.get_json()
@@ -36,7 +36,7 @@ def update_disposition(code):
     return jsonify(disposition.to_dict())
 
 # ✅ Delete
-@dispositions_bp.route('/dispositions/<string:code>', methods=['DELETE'])
+@dispositions_bp.route('/disposition/<string:code>', methods=['DELETE'])
 def delete_disposition(code):
     disposition = Disposition.query.get_or_404(code)
     db.session.delete(disposition)
