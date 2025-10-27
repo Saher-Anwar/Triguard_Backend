@@ -14,31 +14,33 @@ def seed_database():
     """Insert sample data into the database."""
     print("🌱 Seeding database...")
 
+    # --- Permissions ---
+    p1 = Permission(code="APPOINTMENTS.VIEW.ALL", description="View Appointments")
+    p2 = Permission(code="APPOINTMENTS.VIEW.SELF", description="View Your Appointments")
+    p3 = Permission(code="APPOINTMENTS.CREATE", description="Create Appointments")
+    p4 = Permission(code="APPOINTMENTS.DELETE", description="Delete Appointments")
+    p5 = Permission(code="APPOINTMENTS.UPDATE.ASSIGN_AGENT", description="Assign or Reassign Agents to Appointment")
+    p6 = Permission(code="APPOINTMENTS.UPDATE.SELF_ASSIGN", description="Assign Yourself to Appointment")
+    p7 = Permission(code="APPOINTMENTS.UPDATE.STATUS", description="Update Appointment Status")
+    p8 = Permission(code="USERS.VIEW", description="View All Users")
+    p9 = Permission(code="USERS.CREATE", description="Create Users")
+    p10 = Permission(code="USERS.DELETE", description="Delete Users")
+    p11 = Permission(code="USERS.UPDATE.PERMISSIONS", description="Update User Permissions")
+    p12 = Permission(code="ROLES.CREATE", description="Create Roles")
+    p13 = Permission(code="ROLES.DELETE", description="Delete Roles")
+    p14 = Permission(code="ROLES.UPDATE", description="Add Permissions to Roles")
+    p15 = Permission(code="DISPOSITIONS.CREATE", description="Create Dispositions")
+    p16 = Permission(code="DISPOSITIONS.DELETE", description="Delete Dispositions")
+
     # --- Roles ---
     admin_role = Role(name="Admin")
     staff_role = Role(name="Field Agent")
     
-    # Add roles first so we can get their IDs
-    db.session.add_all([admin_role, staff_role])
-    db.session.flush()  # This assigns IDs without committing
-
-    # --- Permissions ---
-    p1 = Permission(code="APPOINTMENTS.VIEW.ALL", description="View Appointments", role_id=admin_role.id)
-    p2 = Permission(code="APPOINTMENTS.VIEW.SELF", description="View Your Appointments", role_id=staff_role.id)
-    p3 = Permission(code="APPOINTMENTS.CREATE", description="Create Appointments", role_id=admin_role.id)
-    p4 = Permission(code="APPOINTMENTS.DELETE", description="Delete Appointments", role_id=admin_role.id)
-    p5 = Permission(code="APPOINTMENTS.UPDATE.ASSIGN_AGENT", description="Assign or Reassign Agents to Appointment", role_id=admin_role.id)
-    p6 = Permission(code="APPOINTMENTS.UPDATE.SELF_ASSIGN", description="Assign Yourself to Appointment", role_id=staff_role.id)
-    p7 = Permission(code="APPOINTMENTS.UPDATE.STATUS", description="Update Appointment Status", role_id=admin_role.id)
-    p8 = Permission(code="USERS.VIEW", description="View All Users", role_id=admin_role.id)
-    p9 = Permission(code="USERS.CREATE", description="Create Users", role_id=admin_role.id)
-    p10 = Permission(code="USERS.DELETE", description="Delete Users", role_id=admin_role.id)
-    p11 = Permission(code="USERS.UPDATE.PERMISSIONS", description="Update User Permissions", role_id=admin_role.id)
-    p12 = Permission(code="ROLES.CREATE", description="Create Roles", role_id=admin_role.id)
-    p13 = Permission(code="ROLES.DELETE", description="Delete Roles", role_id=admin_role.id)
-    p14 = Permission(code="ROLES.UPDATE", description="Add Permissions to Roles", role_id=admin_role.id)
-    p15 = Permission(code="DISPOSITIONS.CREATE", description="Create Dispositions", role_id=admin_role.id)
-    p16 = Permission(code="DISPOSITIONS.DELETE", description="Delete Dispositions", role_id=admin_role.id)
+    # Assign permissions to admin role (all permissions)
+    admin_role.permissions.extend([p1, p3, p4, p5, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16])
+    
+    # Assign permissions to staff role (limited permissions)
+    staff_role.permissions.extend([p2, p6])
 
     # --- Users ---
     user1 = User(
@@ -99,6 +101,7 @@ def seed_database():
     # Add all data
     db.session.add_all([
         p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16,
+        admin_role, staff_role,
         user1, user2,
         customer1, customer2,
         disp1, disp2,

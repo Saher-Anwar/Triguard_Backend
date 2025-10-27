@@ -2,14 +2,17 @@ from datetime import datetime
 from extensions import db
 from sqlalchemy.dialects.postgresql import JSONB
 
+# Association table for many-to-many relationship between roles and permissions
+role_permissions = db.Table('role_permissions',
+    db.Column('role_id', db.Integer, db.ForeignKey('roles.id'), primary_key=True),
+    db.Column('permission_code', db.String(50), db.ForeignKey('permissions.code'), primary_key=True)
+)
+
 class Permission(db.Model):
     __tablename__ = 'permissions'
     
     code = db.Column(db.String(50), primary_key=True)
     description = db.Column(db.Text)
-    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=True)
-    
-    role = db.relationship('Role', backref='permissions')
     
     def __repr__(self):
         return f'<Permission {self.code}>'
@@ -19,6 +22,8 @@ class Role(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
+    
+    permissions = db.relationship('Permission', secondary=role_permissions, backref='roles')
     
     def __repr__(self):
         return f'<Role {self.name}>'
