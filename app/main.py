@@ -32,12 +32,12 @@ def create_app(config_name=None):
     migrate.init_app(app, db)
 
     # Register blueprints
-    app.register_blueprint(appointments_bp, url_prefix='/api/appointments')
-    app.register_blueprint(customers_bp, url_prefix='/api/customers')
-    app.register_blueprint(dispositions_bp, url_prefix='/api/dispositions')
-    app.register_blueprint(users_bp, url_prefix='/api/users')
-    app.register_blueprint(roles_bp, url_prefix='/api/roles')
-    app.register_blueprint(permissions_bp, url_prefix='/api/permissions')
+    app.register_blueprint(appointments_bp, url_prefix='/api/')
+    app.register_blueprint(customers_bp, url_prefix='/api/')
+    app.register_blueprint(dispositions_bp, url_prefix='/api/')
+    app.register_blueprint(users_bp, url_prefix='/api/')
+    app.register_blueprint(roles_bp, url_prefix='/api/')
+    app.register_blueprint(permissions_bp, url_prefix='/api/')
 
     register_error_handlers(app)
 

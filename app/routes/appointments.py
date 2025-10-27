@@ -4,7 +4,7 @@ from models.models import Appointment
 
 appointments_bp = Blueprint('appointments', __name__)
 
-@appointments_bp.route('/appointments', methods=['POST'])
+@appointments_bp.route('/appointment', methods=['POST'])
 def create_appointment():
     data = request.get_json()
     appointment = Appointment(**data)
@@ -17,12 +17,12 @@ def get_appointments():
     appointments = Appointment.query.all()
     return jsonify([a.to_dict() for a in appointments])
 
-@appointments_bp.route('/appointments/<int:id>', methods=['GET'])
+@appointments_bp.route('/appointment/<int:id>', methods=['GET'])
 def get_appointment(id):
     appointment = Appointment.query.get_or_404(id)
     return jsonify(appointment.to_dict())
 
-@appointments_bp.route('/appointments/<int:id>', methods=['PUT'])
+@appointments_bp.route('/appointment/<int:id>', methods=['PUT'])
 def update_appointment(id):
     appointment = Appointment.query.get_or_404(id)
     data = request.get_json()
@@ -31,7 +31,7 @@ def update_appointment(id):
     db.session.commit()
     return jsonify(appointment.to_dict())
 
-@appointments_bp.route('/appointments/<int:id>', methods=['DELETE'])
+@appointments_bp.route('/appointment/<int:id>', methods=['DELETE'])
 def delete_appointment(id):
     appointment = Appointment.query.get_or_404(id)
     db.session.delete(appointment)
