@@ -62,8 +62,50 @@ def create_app(config_name=None):
 def seed_command():
     seed_database()
 
+@click.command("unseed")
+@with_appcontext
+def unseed_command():
+    """Remove all seeded data safely from the database."""
+    from models.models import Appointment, Customer, Disposition, User, Role, Permission
+    from extensions import db
+
+    try:
+        # Delete in reverse dependency order to avoid FK violations
+        db.session.query(Appointment).delete()
+        db.session.query(Disposition).delete()
+        db.session.query(Customer).delete()
+        db.session.query(User).delete()
+        db.session.query(Role).delete()
+        db.session.query(Permission).delete()
+
+        db.session.commit()
+        click.echo("✅ Database unseeded successfully.")
+
+    except Exception as e:
+        db.session.rollback()
+        click.echo(f"❌ Error during unseeding: {e}")
+
+@click.command("wipe")
+@with_appcontext
+def wipe_command():
+    """Completely drop and recreate all tables."""
+    from extensions import db
+    from models import models  # ensures all models are loaded
+
+    click.confirm(
+        "⚠️  This will delete ALL data and drop ALL tables. Continue?",
+        abort=True
+    )
+
+    db.drop_all()
+    db.create_all()
+    db.session.commit()
+    click.echo("🧱 Database wiped and recreated successfully.")
+
 def register_commands(app):
     app.cli.add_command(seed_command)
+    app.cli.add_command(unseed_command)
+    app.cli.add_command(wipe_command)
 
 if __name__ == '__main__':
     app = create_app()
