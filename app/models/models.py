@@ -16,6 +16,13 @@ class Permission(db.Model):
     
     def __repr__(self):
         return f'<Permission {self.code}>'
+    
+    def to_dict(self):
+        return {
+            'code': self.code,
+            'description': self.description,
+            'roles': [role.name for role in self.roles] if self.roles else []
+        }
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -27,6 +34,19 @@ class Role(db.Model):
     
     def __repr__(self):
         return f'<Role {self.name}>'
+    
+    def to_dict(self):
+      return {
+          'id': self.id,
+          'name': self.name,
+          'permissions': [
+              {
+                  'code': perm.code,
+                  'description': perm.description
+              } for perm in self.permissions
+          ] if self.permissions else []
+      }
+
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -45,6 +65,21 @@ class User(db.Model):
     
     def __repr__(self):
         return f'<User {self.name}>'
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'address': self.address,
+            'phone': self.phone,
+            'date_joined': self.date_joined.isoformat() if self.date_joined else None,
+            'status': self.status,
+            'permission': {
+                'code': self.permission.code,
+                'description': self.permission.description
+            } if self.permission else None
+        }
 
 class Disposition(db.Model):
     __tablename__ = 'dispositions'
@@ -54,6 +89,12 @@ class Disposition(db.Model):
     
     def __repr__(self):
         return f'<Disposition {self.code}>'
+    
+    def to_dict(self):
+        return {
+            'code': self.code,
+            'description': self.description
+        }
 
 class Customer(db.Model):
     __tablename__ = 'customers'
@@ -67,6 +108,16 @@ class Customer(db.Model):
     
     def __repr__(self):
         return f'<Customer {self.name}>'
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'phone': self.phone,
+            'address': self.address,
+            'profile_data': self.profile_data
+        }
 
 class Appointment(db.Model):
     __tablename__ = 'appointments'
