@@ -37,3 +37,8 @@ def delete_appointment(id):
     db.session.delete(appointment)
     db.session.commit()
     return jsonify({'message': 'Appointment deleted successfully'})
+
+@appointments_bp.route('/users/<int:user_id>/appointments', methods=['GET'])
+def get_user_appointments(user_id):
+    appointments = Appointment.query.filter_by(user_id=user_id).all()
+    return jsonify([a.to_dict() for a in appointments])

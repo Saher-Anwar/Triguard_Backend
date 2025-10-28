@@ -37,7 +37,7 @@ class Role(db.Model):
     
     def to_dict(self):
       return {
-          'id': self.id,
+          'id': str(self.id),
           'name': self.name,
           'permissions': [
               {
@@ -118,7 +118,7 @@ class Appointment(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     booking_datetime = db.Column(db.DateTime, nullable=False)
-    status = db.Column(db.Enum('unassigned', 'scheduled', 'in progress', 'complete', 
+    status = db.Column(db.Enum('unassigned', 'scheduled', 'in progress', 'complete', 'cancelled', 'rescheduled',
                               name='appointment_status'), default='unassigned')
     customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
     details = db.Column(JSONB)
@@ -152,7 +152,6 @@ class Appointment(db.Model):
             'user': {
                 'id': self.user.id,
                 'name': self.user.name,
-                'email': self.user.email,
                 'status': self.user.status
             } if self.user else None
         }
