@@ -45,10 +45,10 @@ def seed_database():
     # --- Users ---
     user1 = User(
         name="John Doe",
+        email="john@example.com",
         status="available",
         role_id=admin_role.id,
         profile={
-            "email": "john@example.com",
             "age": 32,
             "address": "123 Maple Street",
             "phone": "555-111-2222",
@@ -57,10 +57,10 @@ def seed_database():
     )
     user2 = User(
         name="Jane Smith",
+        email="jane@example.com",
         status="on-site",
         role_id=staff_role.id,
         profile={
-            "email": "jane@example.com",
             "age": 28,
             "address": "456 Oak Avenue", 
             "phone": "555-333-4444",
