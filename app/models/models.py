@@ -53,6 +53,7 @@ class User(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
     avatar = db.Column(db.String(255), nullable=True)
     status = db.Column(db.Enum('on-site', 'en-route', 'available', 'offline', name='user_status'), 
                       default='offline')
@@ -68,6 +69,7 @@ class User(db.Model):
         return {
             'id': str(self.id),  # Convert to string for frontend
             'name': self.name,
+            'email': self.email, 
             'avatar': self.avatar,
             'permissions': [perm.to_dict() for perm in self.role.permissions] if self.role else [],
             'role': self.role.to_dict() if self.role else None,
