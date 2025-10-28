@@ -8,6 +8,16 @@ dispositions_bp = Blueprint('dispositions', __name__)
 @dispositions_bp.route('/disposition', methods=['POST'])
 def create_disposition():
     data = request.get_json()
+    
+    # Validate required fields
+    code = data.get('code')
+    if not code:
+        return jsonify({"error": "Disposition code is required"}), 400
+    
+    # Check for duplicates
+    if Disposition.query.filter_by(code=code).first():
+        return jsonify({"error": f"Disposition '{code}' already exists"}), 400
+    
     disposition = Disposition(**data)
     db.session.add(disposition)
     db.session.commit()
