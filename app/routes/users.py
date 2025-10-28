@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from extensions import db
-from models.models import User
+from models.models import User, Role
 
 users_bp = Blueprint('users', __name__)
 
@@ -32,6 +32,25 @@ def update_user(id):
     data = request.get_json()
     for key, value in data.items():
         setattr(user, key, value)
+    db.session.commit()
+    return jsonify(user.to_dict())
+
+# ✅ Update user role
+@users_bp.route('/user/<int:id>/role', methods=['PUT'])
+def update_user_role(id):
+    user = User.query.get_or_404(id)
+    data = request.get_json()
+    
+    role_id = data.get('role_id')
+    if role_id is None:
+        return jsonify({"error": "role_id is required"}), 400
+    
+    # Validate that the role exists
+    role = Role.query.get(role_id)
+    if not role:
+        return jsonify({"error": f"Role with id {role_id} not found"}), 404
+    
+    user.role_id = role_id
     db.session.commit()
     return jsonify(user.to_dict())
 
