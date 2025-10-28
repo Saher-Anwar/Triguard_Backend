@@ -77,8 +77,16 @@ def seed_database():
     )
 
     # --- Dispositions ---
-    disp1 = Disposition(code="COMPLETE", description="Job completed successfully")
-    disp2 = Disposition(code="CANCELLED", description="Appointment cancelled")
+    disp1 = Disposition(code="CANCELLED_AT_DOOR", description="Customer cancelled appointment at door")
+    disp2 = Disposition(code="CREDIT_FAILED", description="Customer credit failed")
+    disp3 = Disposition(code="SHOPPER", description="Customer is shopper")
+    disp4 = Disposition(code="FOLLOW_UP_NEEDED", description="Customer needs followed up appointment")
+    disp5 = Disposition(code="NO_SHOWED", description="Customer did not show up")
+    disp6 = Disposition(code="CUSTOMER_NOT_INTERESTED", description="Customer needs followed up appointment")
+    disp7 = Disposition(code="BEYOND_REPAIR", description="Home was beyond a roof repair")
+    disp8 = Disposition(code="ONE_LEGGER", description="One party was not there or unsure")
+    disp9 = Disposition(code="SOLD_CASH_DEAL", description="Sold Cash Deal")
+    disp10 = Disposition(code="SOLD_PENDING", description="Sold pending final underwriting")
 
     # --- Appointments ---
     appt1 = Appointment(
@@ -104,7 +112,7 @@ def seed_database():
         admin_role, staff_role,
         user1, user2,
         customer1, customer2,
-        disp1, disp2,
+        disp1, disp2, disp3, disp4, disp5, disp6, disp7, disp8, disp9, disp10,
         appt1, appt2
     ])
 

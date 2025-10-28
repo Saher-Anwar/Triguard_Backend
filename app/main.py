@@ -66,7 +66,7 @@ def seed_command():
 @with_appcontext
 def unseed_command():
     """Remove all seeded data safely from the database."""
-    from models.models import Appointment, Customer, Disposition, User, Role, Permission
+    from models.models import Appointment, Customer, Disposition, User, Role, Permission, role_permissions
     from extensions import db
 
     try:
@@ -75,6 +75,11 @@ def unseed_command():
         db.session.query(Disposition).delete()
         db.session.query(Customer).delete()
         db.session.query(User).delete()
+        
+        # Clear the many-to-many association table first
+        db.session.execute(role_permissions.delete())
+        
+        # Then delete roles and permissions
         db.session.query(Role).delete()
         db.session.query(Permission).delete()
 
