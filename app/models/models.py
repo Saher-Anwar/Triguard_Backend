@@ -56,7 +56,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     avatar = db.Column(db.String(255), nullable=True)
     status = db.Column(db.Enum('on-site', 'en-route', 'available', 'offline', name='user_status'), 
-                      default='offline')
+                      default='available')
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=True)
     profile = db.Column(JSONB, nullable=True)
     
