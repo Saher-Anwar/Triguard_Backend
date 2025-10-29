@@ -23,6 +23,7 @@ def haversine_distance(lat1, lon1, lat2, lon2):
 @appointments_bp.route('/appointment', methods=['POST'])
 def create_appointment():
     from datetime import datetime
+    from models.models import Customer
     
     data = request.get_json()
     
@@ -32,6 +33,21 @@ def create_appointment():
             data['booking_datetime'] = datetime.fromisoformat(data['booking_datetime'])
         except ValueError:
             return jsonify({"error": "Invalid datetime format. Use ISO 8601 format (YYYY-MM-DDTHH:MM:SS)"}), 400
+    
+    # Handle nested customer creation
+    if 'customer' in data:
+        customer_data = data.pop('customer')
+        
+        # Check if customer already exists by email
+        existing_customer = Customer.query.filter_by(email=customer_data['email']).first()
+        if existing_customer:
+            data['customer_id'] = existing_customer.id
+        else:
+            # Create new customer
+            new_customer = Customer(**customer_data)
+            db.session.add(new_customer)
+            db.session.flush()  # Get the customer ID without committing
+            data['customer_id'] = new_customer.id
     
     appointment = Appointment(**data)
     db.session.add(appointment)
