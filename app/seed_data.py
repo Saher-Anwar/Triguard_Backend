@@ -126,7 +126,7 @@ def seed_database():
 
     # --- Appointments ---
     appt1 = Appointment(
-        booking_datetime=datetime.utcnow(),
+        booking_datetime=datetime.fromisoformat("2025-10-30T09:00:00"),
         status="scheduled",
         customer=customer1,
         user=user1,
@@ -134,7 +134,7 @@ def seed_database():
         disposition=disp1
     )
     appt2 = Appointment(
-        booking_datetime=datetime.utcnow(),
+        booking_datetime=datetime.fromisoformat("2025-10-30T14:30:00"),
         status="in progress",
         customer=customer2,
         user=user2,

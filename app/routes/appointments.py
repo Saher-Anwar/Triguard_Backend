@@ -22,7 +22,17 @@ def haversine_distance(lat1, lon1, lat2, lon2):
 
 @appointments_bp.route('/appointment', methods=['POST'])
 def create_appointment():
+    from datetime import datetime
+    
     data = request.get_json()
+    
+    # Convert ISO 8601 string to datetime object
+    if 'booking_datetime' in data and isinstance(data['booking_datetime'], str):
+        try:
+            data['booking_datetime'] = datetime.fromisoformat(data['booking_datetime'])
+        except ValueError:
+            return jsonify({"error": "Invalid datetime format. Use ISO 8601 format (YYYY-MM-DDTHH:MM:SS)"}), 400
+    
     appointment = Appointment(**data)
     db.session.add(appointment)
     db.session.commit()
