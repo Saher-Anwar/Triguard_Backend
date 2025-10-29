@@ -8,6 +8,20 @@ users_bp = Blueprint('users', __name__)
 @users_bp.route('/user', methods=['POST'])
 def create_user():
     data = request.get_json()
+    
+    # Validate required fields
+    name = data.get('name')
+    email = data.get('email')
+    
+    if not name:
+        return jsonify({"error": "Name is required"}), 400
+    if not email:
+        return jsonify({"error": "Email is required"}), 400
+    
+    # Check for duplicate email
+    if User.query.filter_by(email=email).first():
+        return jsonify({"error": f"User with email '{email}' already exists"}), 400
+    
     user = User(**data)
     db.session.add(user)
     db.session.commit()
@@ -19,10 +33,18 @@ def get_users():
     users = User.query.all()
     return jsonify([u.to_dict() for u in users])
 
-# ✅ Read one
+# ✅ Read one by ID
 @users_bp.route('/user/<int:id>', methods=['GET'])
 def get_user(id):
     user = User.query.get_or_404(id)
+    return jsonify(user.to_dict())
+
+# ✅ Read one by email
+@users_bp.route('/user/email/<string:email>', methods=['GET'])
+def get_user_by_email(email):
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
     return jsonify(user.to_dict())
 
 # ✅ Update
