@@ -54,12 +54,12 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    avatar = db.Column(db.String(255), nullable=True)
     status = db.Column(db.Enum('on-site', 'en-route', 'available', 'offline', name='user_status'), 
                       default='available')
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=True)
     profile = db.Column(JSONB, nullable=True)
-    
+    location = db.Column(JSONB, nullable=False)
+
     role = db.relationship('Role', backref='users')
     
     def __repr__(self):
@@ -70,11 +70,11 @@ class User(db.Model):
             'id': str(self.id),  # Convert to string for frontend
             'name': self.name,
             'email': self.email, 
-            'avatar': self.avatar,
             'permissions': [perm.to_dict() for perm in self.role.permissions] if self.role else [],
             'role': self.role.to_dict() if self.role else None,
             'status': self.status,
-            'profile': self.profile if self.profile else {}
+            'profile': self.profile if self.profile else {},
+            'location': self.location
         }
 
 class Disposition(db.Model):
@@ -99,7 +99,7 @@ class Customer(db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     phone = db.Column(db.String(20))
-    address = db.Column(db.Text)
+    location = db.Column(JSONB, nullable=False)
     profile_data = db.Column(JSONB)
     
     def __repr__(self):
@@ -111,7 +111,7 @@ class Customer(db.Model):
             'name': self.name,
             'email': self.email,
             'phone': self.phone,
-            'address': self.address,
+            'location': self.location if self.location else None,
             'profile_data': self.profile_data
         }
 
@@ -144,7 +144,7 @@ class Appointment(db.Model):
                 'name': self.customer.name,
                 'email': self.customer.email,
                 'phone': self.customer.phone,
-                'address': self.customer.address
+                'location': self.customer.location
             } if self.customer else None,
             'details': self.details,
             'disposition': {

@@ -48,9 +48,16 @@ def seed_database():
         email="john@example.com",
         status="available",
         role_id=admin_role.id,
+        location={
+            "address": "123 Maple Street",
+            "city": "Springfield",
+            "country": "USA",
+            "zip_code": "12345",
+            "latitude": 39.7817,
+            "longitude": -89.6501
+        },
         profile={
             "age": 32,
-            "address": "123 Maple Street",
             "phone": "555-111-2222",
             "department": "Security Operations"
         }
@@ -60,9 +67,16 @@ def seed_database():
         email="jane@example.com",
         status="on-site",
         role_id=staff_role.id,
+        location={
+            "address": "456 Oak Avenue",
+            "city": "Springfield", 
+            "country": "USA",
+            "zip_code": "12346",
+            "latitude": 39.7892,
+            "longitude": -89.6445
+        },
         profile={
             "age": 28,
-            "address": "456 Oak Avenue", 
             "phone": "555-333-4444",
             "department": "Field Operations"
         }
@@ -73,14 +87,28 @@ def seed_database():
         name="Alice Johnson",
         email="alice@example.com",
         phone="555-777-8888",
-        address="789 Pine Blvd",
+        location={
+            "address": "789 Pine Blvd",
+            "city": "Springfield",
+            "country": "USA", 
+            "zip_code": "12347",
+            "latitude": 39.7755,
+            "longitude": -89.6598
+        },
         profile_data={"preferred_time": "morning", "notes": "VIP customer"}
     )
     customer2 = Customer(
         name="Bob Brown",
         email="bob@example.com",
         phone="555-999-0000",
-        address="321 Cedar Lane",
+        location={
+            "address": "321 Cedar Lane",
+            "city": "Springfield",
+            "country": "USA",
+            "zip_code": "12348", 
+            "latitude": 39.7689,
+            "longitude": -89.6712
+        },
         profile_data={"preferred_time": "evening", "notes": "Repeat customer"}
     )
 
