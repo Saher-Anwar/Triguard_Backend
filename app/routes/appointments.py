@@ -1,8 +1,24 @@
 from flask import Blueprint, request, jsonify
 from extensions import db
-from models.models import Appointment
+from models.models import Appointment, User
+import math
 
 appointments_bp = Blueprint('appointments', __name__)
+
+def haversine_distance(lat1, lon1, lat2, lon2):
+    """Calculate the great circle distance between two points on earth (in miles)"""
+    # Convert decimal degrees to radians
+    lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
+    
+    # Haversine formula
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
+    c = 2 * math.asin(math.sqrt(a))
+    
+    # Radius of earth in miles
+    r = 3959
+    return c * r
 
 @appointments_bp.route('/appointment', methods=['POST'])
 def create_appointment():
@@ -42,3 +58,38 @@ def delete_appointment(id):
 def get_user_appointments(user_id):
     appointments = Appointment.query.filter_by(user_id=user_id).all()
     return jsonify([a.to_dict() for a in appointments])
+
+@appointments_bp.route('/appointment/<int:appointment_id>/users', methods=['GET'])
+def get_users_by_appointment_distance(appointment_id):
+    appointment = Appointment.query.get_or_404(appointment_id)
+    
+    # Get appointment location from customer
+    if not appointment.customer or not appointment.customer.location:
+        return jsonify({"error": "Appointment customer location not found"}), 400
+    
+    customer_location = appointment.customer.location
+    appointment_lat = customer_location.get('latitude')
+    appointment_lon = customer_location.get('longitude')
+    
+    if appointment_lat is None or appointment_lon is None:
+        return jsonify({"error": "Appointment coordinates not found"}), 400
+    
+    # Get all users with locations
+    users = User.query.all()
+    users_with_distance = []
+    
+    for user in users:
+        if user.location and user.location.get('latitude') and user.location.get('longitude'):
+            user_lat = user.location.get('latitude')
+            user_lon = user.location.get('longitude')
+            
+            distance = haversine_distance(appointment_lat, appointment_lon, user_lat, user_lon)
+            
+            user_data = user.to_dict()
+            user_data['distance_miles'] = round(distance, 2)
+            users_with_distance.append(user_data)
+    
+    # Sort by distance (closest first)
+    users_with_distance.sort(key=lambda x: x['distance_miles'])
+    
+    return jsonify(users_with_distance)
