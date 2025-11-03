@@ -48,6 +48,7 @@ def seed_database():
         email="john@example.com",
         status="available",
         role_id=admin_role.id,
+        permissions=[perm.code for perm in admin_role.permissions],  # Copy role permissions
         location={
             "address": "123 Maple Street",
             "city": "Springfield",
@@ -67,9 +68,10 @@ def seed_database():
         email="jane@example.com",
         status="on-site",
         role_id=staff_role.id,
+        permissions=[perm.code for perm in staff_role.permissions],  # Copy role permissions
         location={
             "address": "456 Oak Avenue",
-            "city": "Springfield", 
+            "city": "Springfield",
             "country": "USA",
             "zip_code": "12346",
             "latitude": 39.7892,

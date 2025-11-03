@@ -62,17 +62,53 @@ def update_user(id):
 def update_user_role(id):
     user = User.query.get_or_404(id)
     data = request.get_json()
-    
+
     role_id = data.get('role_id')
-    if role_id is None:
-        return jsonify({"error": "role_id is required"}), 400
-    
+
+    # Handle None or empty string - user has no role and no permissions
+    if role_id is None or role_id == '' or role_id == 'null':
+        user.role_id = None
+        user.permissions = []
+        db.session.commit()
+        return jsonify(user.to_dict())
+
     # Validate that the role exists
     role = Role.query.get(role_id)
     if not role:
         return jsonify({"error": f"Role with id {role_id} not found"}), 404
-    
+
+    # Update role and copy permission codes from role to user
     user.role_id = role_id
+    user.permissions = [perm.code for perm in role.permissions]
+
+    db.session.commit()
+    return jsonify(user.to_dict())
+
+# ✅ Update user permissions
+@users_bp.route('/user/<int:id>/permissions', methods=['PUT'])
+def update_user_permissions(id):
+    from models.models import Permission
+
+    user = User.query.get_or_404(id)
+    data = request.get_json()
+
+    permission_codes = data.get('permission_codes', [])
+
+    # Validate that all permission codes exist
+    if permission_codes:
+        existing_perms = Permission.query.filter(Permission.code.in_(permission_codes)).all()
+        existing_codes = {perm.code for perm in existing_perms}
+        invalid_codes = [code for code in permission_codes if code not in existing_codes]
+
+        if invalid_codes:
+            return jsonify({
+                "error": "Invalid permission codes provided",
+                "invalid_permissions": invalid_codes
+            }), 400
+
+    # Replace user's permissions with new list
+    user.permissions = permission_codes
+
     db.session.commit()
     return jsonify(user.to_dict())
 
