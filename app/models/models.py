@@ -50,27 +50,37 @@ class Role(db.Model):
 
 class User(db.Model):
     __tablename__ = 'users'
-    
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    status = db.Column(db.Enum('on-site', 'en-route', 'available', 'offline', name='user_status'), 
+    status = db.Column(db.Enum('on-site', 'en-route', 'available', 'offline', name='user_status'),
                       default='available')
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=True)
+    permissions = db.Column(JSONB, nullable=True, default=[])  # Array of permission codes
     profile = db.Column(JSONB, nullable=True)
     location = db.Column(JSONB, nullable=False)
 
     role = db.relationship('Role', backref='users')
-    
+
     def __repr__(self):
         return f'<User {self.name}>'
-    
+
     def to_dict(self):
+        # Get full permission objects from permission codes
+        permission_list = []
+        if self.permissions:
+            from models.models import Permission
+            for code in self.permissions:
+                perm = Permission.query.get(code)
+                if perm:
+                    permission_list.append(perm.to_dict())
+
         return {
             'id': str(self.id),  # Convert to string for frontend
             'name': self.name,
-            'email': self.email, 
-            'permissions': [perm.to_dict() for perm in self.role.permissions] if self.role else [],
+            'email': self.email,
+            'permissions': permission_list,
             'role': self.role.to_dict() if self.role else None,
             'status': self.status,
             'profile': self.profile if self.profile else {},
